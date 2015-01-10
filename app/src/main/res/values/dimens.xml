@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<item name="floatinghintedittext_hint_scale" type="dimen" format="float">0.6</item>
+<item name="floatinghintedittext_animation_steps" type="dimen" formant="integer">6</item>
+<dimen name="activity_horizontal_margin">16dp</dimen>
+<dimen name="activity_vertical_margin">16dp</dimen>
+<dimen name="cellwidth">75dp</dimen>
+<dimen name="rowheight">25dp</dimen>
+</resources>
+
+

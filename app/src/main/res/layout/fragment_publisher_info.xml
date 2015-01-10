@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0px"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_firstname"
+                android:hint="First Name"
+                android:layout_margin="15dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_middlename"
+                android:hint="Middle Name"
+                android:layout_margin="15dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_lastname"
+                android:hint="Last Name"
+                android:layout_margin="15dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_address1"
+                android:hint="Address - Line 1"
+                android:layout_margin="15dp" />
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_address2"
+                android:layout_margin="15dp"
+                android:hint="Address - Line 2" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/et_city"
+                    android:layout_margin="15dp"
+                    android:hint="City" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/et_state"
+                    android:layout_margin="15dp"
+                    android:hint="State" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/et_zip"
+                    android:layout_margin="15dp"
+                    android:hint="Zip"
+                    android:inputType="number" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_homephone"
+                android:layout_margin="15dp"
+                android:hint="Home Phone" />
+
+            <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_cellphone"
+                android:layout_margin="15dp"
+                android:hint="Cell Phone" />
+
+            <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_workphone"
+                android:layout_margin="15dp"
+                android:hint="Work Phone" />
+        </LinearLayout>
+
+        <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_email"
+            android:layout_margin="15dp"
+            android:hint="Email Address"
+            android:enabled="true" />
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="15dp">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Baptized"
+                android:id="@+id/rb_baptized"
+                android:layout_margin="15dp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unbaptized"
+                android:id="@+id/rb_unbaptized"
+                android:layout_margin="15dp" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0px"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_fieldservicegroup"
+            android:layout_margin="15dp" />
+
+        <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/et_dateofbirth"
+            android:hint="Date of Birth"
+            android:layout_margin="15dp"
+            android:enabled="true" />
+
+        <mjc.com.secretaryhelper.PublisherRecordFragment.FloatingHintEditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:id="@+id/et_dateofbaptism"
+            android:hint="Date of Baptism"
+            android:layout_margin="15dp"
+            android:enabled="true" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Elder"
+            android:id="@+id/cb_elder"
+            android:layout_margin="15dp" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minesterial Servant"
+            android:id="@+id/cb_minesterialservant"
+            android:layout_margin="15dp" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regular Pioneer"
+            android:id="@+id/cb_regularpioneer"
+            android:layout_margin="15dp" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regular Auxiliary Pioneer"
+            android:id="@+id/cb_regularauxiliarypioneer"
+            android:layout_margin="15dp" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Changes"
+            android:id="@+id/button_textview"
+            android:layout_gravity="center|bottom"
+            android:gravity="center"
+            android:background="#ffcbcbcb"
+            android:layout_margin="15dp"
+            android:padding="15dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

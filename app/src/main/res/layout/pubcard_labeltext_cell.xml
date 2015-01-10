@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#7e7d73" >
+
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="@dimen/cellwidth"
+            android:layout_height="@dimen/rowheight"
+            android:layout_margin="1dp"
+            android:background="#E6E4D5"
+            android:gravity="center"
+            android:text="X"
+            android:textColor="#000000" />
+
+    </FrameLayout>
+</merge>

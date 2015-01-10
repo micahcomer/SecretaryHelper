@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SecretaryHelper</string>
+    <string name="title_section1">Publisher Records</string>
+    <string name="title_section2">Field Service Groups</string>
+    <string name="title_section3">Reports</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="publisher_name">Publisher Name Here</string>
+    <string name="service_year_label">Service Year: </string>
+    <string name="service_year">20XX</string>
+    <string name="tag_key_location">Tag Key Location</string>
+    <color name="glass">#CC85A4A8</color>
+</resources>
