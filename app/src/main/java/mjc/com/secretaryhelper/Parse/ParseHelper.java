@@ -14,7 +14,9 @@ import mjc.com.secretaryhelper.Parse.ParseObjects.PublisherGroup;
 import mjc.com.secretaryhelper.PublisherGroupFragment.PublisherGroupFragment;
 import mjc.com.secretaryhelper.Parse.ParseObjects.PublisherInfo;
 import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherCardFragment;
+import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherCardListAdapter;
 import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherNameListAdapter;
+import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherRecordFragment;
 
 /**
  * Created to interact with Parse
@@ -34,19 +36,20 @@ public class ParseHelper {
         });
     }
 
-    public static void GetRecordsForPublisher(final PublisherCardFragment cardFragment, PublisherInfo info) {
+    public static void GetRecordsForPublisher(final PublisherCardListAdapter adapter, final PublisherInfo info) {
 
-        cardFragment.setInfo(info);
         ParseQuery query = new ParseQuery(MonthReport.class);
         query.whereEqualTo("Publisher", info);
         query.findInBackground(new FindCallback() {
             @Override
             public void done(List list, ParseException e) {
                 ArrayList parseList = (ArrayList<ParseObject>) list;
-                cardFragment.onQueryCompleted(parseList, MonthReport.class);
+                adapter.OnPublisherRecordsReceived(list, info);
             }
         });
     }
+
+
 
     public static void SendCardUpdate(ArrayList<MonthReport> monthsToUpdate, ArrayList<Integer> monthsToClear, PublisherInfo info, int year) {
 
@@ -81,13 +84,14 @@ public class ParseHelper {
         }
     }
 
-    public static void GetGroups(final PublisherExpandableListAdapter masterGroupAdapter) {
+    public static void GetGroups(final PublisherGroupFragment groupFragment, final PublisherRecordFragment recordFragment) {
 
         ParseQuery q = new ParseQuery(PublisherGroup.class);
         q.whereExists("groupNumber").orderByAscending("groupName").findInBackground(new FindCallback() {
             @Override
             public void done(List list, ParseException e) {
-                masterGroupAdapter.onGroupsReceived(list);
+                groupFragment.getMasterGroupAdapter().onGroupsReceived(list);
+                recordFragment.onPublisherGroupsReceived(list);
             }
         });
     }
@@ -141,6 +145,7 @@ public class ParseHelper {
 
        }
     }
+
 
     public static void SaveParseObjectWithSaveCallback(SaveableParseObjectWithCallback object, final Object callbackObject){
        if (object!=null){

@@ -8,15 +8,34 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent">
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Publishers"
-            android:id="@+id/textView7"
-            android:layout_margin="15dp" />
+            android:background="#ff04eecb">
 
-        <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Publishers"
+                android:id="@+id/textView7"
+                android:layout_margin="15dp" />
+
+
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/addPubsImage"
+                android:src="@drawable/ic_action_user_add"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp" />
+        </LinearLayout>
+
+        <com.malinskiy.superrecyclerview.SuperRecyclerView
             android:layout_width="fill_parent"
              android:layout_weight="1"
             android:layout_height="fill_parent"
@@ -25,30 +44,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="2">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/fragment_container"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1">
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="View Publisher Detail Information..."
-            android:id="@+id/button_textview"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_margin="15dp"
-            android:background="#ffcccccc"
-            android:padding="15dp" />
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_container"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:gravity="center">
     </LinearLayout>
 
     <!--

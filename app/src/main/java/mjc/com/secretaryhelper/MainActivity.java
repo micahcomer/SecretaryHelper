@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import mjc.com.secretaryhelper.Parse.ParseHelper;
 import mjc.com.secretaryhelper.PublisherGroupFragment.PublisherGroupFragment;
 import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherRecordFragment;
 
@@ -138,6 +139,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             fragments = new ArrayList<>();
             mPublisherRecordFragment = new PublisherRecordFragment();
             mPublisherGroupFragment = new PublisherGroupFragment();
+
+            ParseHelper.GetGroups(mPublisherGroupFragment, mPublisherRecordFragment);
+
+            mPublisherGroupFragment.setRecordFragment(mPublisherRecordFragment);
+            mPublisherRecordFragment.setGroupFragment(mPublisherGroupFragment);
             fragments.add(mPublisherRecordFragment);
             fragments.add(mPublisherGroupFragment);
             fragments.add(new PlaceholderFragment());

@@ -87,6 +87,7 @@ public class PublisherExpandableListAdapter extends BaseExpandableListAdapter {
                     ParseHelper.GetPublishersForGroup(this, group);
                 }
             }
+
         }
     }
     public void onGroupPubsReceived(List list, PublisherGroup group){
@@ -160,7 +161,9 @@ public class PublisherExpandableListAdapter extends BaseExpandableListAdapter {
 
         PublisherGroup group = mGroups.get(groupPosition);
         nameView.setText(group.groupName);
+        if (group.overseer!=null)
         overseerView.setText("Overseer: " + group.overseer.toString());
+        if (group.assistant!=null)
         assistantView.setText("Assistant: " + group.assistant.toString());
 
         nameView.setTypeface(null, Typeface.BOLD);

@@ -28,6 +28,7 @@ public class PublisherInfo extends ParseObject implements ParseHelper.SaveablePa
     public String emailAddress;
     public boolean baptized;
     public int groupnumber;
+    public PublisherGroup group;
     public String dateOfBirth;
     public String dateOfBaptism;
     public boolean elder;
@@ -51,6 +52,7 @@ public class PublisherInfo extends ParseObject implements ParseHelper.SaveablePa
         this.emailAddress = getString("emailAddress");
         this.baptized = getBoolean("baptized");
         this.groupnumber = getInt("groupNumber");
+        this.group = (PublisherGroup)getParseObject("group");
         this.dateOfBirth = getString("dateOfBirth");
         this.dateOfBaptism = getString("dateOfBaptism");
         this.elder = getBoolean("elder");
@@ -77,6 +79,7 @@ public class PublisherInfo extends ParseObject implements ParseHelper.SaveablePa
         if (emailAddress!=null){put("emailAddress", emailAddress);}
         put ("baptized", baptized);
         put ("groupNumber", groupnumber);
+        if (group!=null){put ("group", group);}
         if (dateOfBirth!=null){put("dateOfBirth", dateOfBirth);}
         if (dateOfBaptism!=null){put("dateOfBaptism", dateOfBaptism);}
         put ("elder", elder);

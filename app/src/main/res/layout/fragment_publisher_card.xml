@@ -3,11 +3,11 @@
     android:orientation="horizontal" android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <mjc.com.secretaryhelper.PublisherRecordFragment.CardFlipper
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        android:id="@+id/viewFlipper"
+        android:id="@+id/cardRecycler"
         android:layout_gravity="center"
         android:layout_weight="0"
         android:clickable="false" />

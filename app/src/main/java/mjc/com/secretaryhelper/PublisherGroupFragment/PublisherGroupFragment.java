@@ -21,12 +21,15 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import mjc.com.secretaryhelper.Parse.ParseHelper;
 import mjc.com.secretaryhelper.Parse.ParseObjects.PublisherGroup;
 import mjc.com.secretaryhelper.Parse.ParseObjects.PublisherInfo;
+import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherRecordFragment;
 import mjc.com.secretaryhelper.R;
 
 public class PublisherGroupFragment extends Fragment {
@@ -35,7 +38,20 @@ public class PublisherGroupFragment extends Fragment {
     ArrayList<PublisherInfo>servants;
     ArrayList<PublisherInfo>unassigned;
 
+
     ExpandableListView masterGroupListView;
+
+
+    public void setRecordFragment(PublisherRecordFragment recordFragment) {
+        this.recordFragment = recordFragment;
+    }
+
+    PublisherRecordFragment recordFragment;
+
+    public PublisherExpandableListAdapter getMasterGroupAdapter() {
+        return masterGroupAdapter;
+    }
+
     PublisherExpandableListAdapter masterGroupAdapter;
     boolean eldersPopulated = false;
     boolean msPopulated = false;
@@ -125,7 +141,6 @@ public class PublisherGroupFragment extends Fragment {
         masterGroupAdapter.setExpandableListView(masterGroupListView);
         registerForContextMenu(masterGroupListView);
 
-        ParseHelper.GetGroups(masterGroupAdapter);
 
             //Add footer...
         TextView footerView = (TextView)(inflater.inflate(R.layout.publisher_name, null));
@@ -247,6 +262,7 @@ public class PublisherGroupFragment extends Fragment {
         ParseHelper.SaveParseObject(group);
         groups.add(group);
         masterGroupAdapter.notifyDataSetChanged();
+        recordFragment.setGroups(groups);
     }
 
     public void onUnassignedPubsReceived(List list){

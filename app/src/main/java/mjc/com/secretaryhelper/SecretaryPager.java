@@ -7,7 +7,6 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import mjc.com.secretaryhelper.PublisherRecordFragment.CardFlipper;
 
 /**
  * Created by Micah on 12/20/2014.
@@ -16,7 +15,6 @@ public class SecretaryPager extends ViewPager {
 
     private RectF flipperBounds;
     LinearLayout ll;
-    CardFlipper flipper;
 
     public SecretaryPager(Context context) {
         super(context);
@@ -26,18 +24,7 @@ public class SecretaryPager extends ViewPager {
         super(context, attrs);
     }
 
-    private void setFlipperBounds(){
-        ll = (LinearLayout) getChildAt(0);
-        if (ll!=null){
-            flipper = (CardFlipper) ll.getChildAt(2);
-        }
 
-        if (flipper!=null){
-            Rect bounds = new Rect();
-            flipper.getHitRect(bounds);
-            flipperBounds = new RectF(bounds);
-        }
-    }
 
 
     /*

@@ -42,4 +42,9 @@ public class PublisherGroup extends ParseObject implements ParseHelper.SaveableP
 
         saveInBackground();
     }
+
+    @Override
+    public String toString(){
+        return groupName;
+    }
 }

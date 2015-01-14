@@ -2,12 +2,14 @@ package mjc.com.secretaryhelper.PublisherRecordFragment;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
@@ -22,72 +24,45 @@ import mjc.com.secretaryhelper.Parse.ParseQueryListener;
 import mjc.com.secretaryhelper.R;
 
 
-public class PublisherNameListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, ParseQueryListener {
+public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherNameHolder> implements AdapterView.OnItemClickListener, ParseQueryListener, View.OnClickListener {
 
     Context context;
     ArrayList<PublisherInfo> infoRecords;
     PublisherInfo selectedRecord;
-    int selectedItem=0;
+    int selectedItem = 0;
     PublisherRecordFragment publisherRecordFragment;
     PublisherCardFragment publisherCardFragment;
-    PublisherInfoFragment publisherInfoFragment;
+    PublisherCardListAdapter cardListAdapter;
+    private static final int VIEW_TYPE = 0;
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
 
-    public PublisherNameListAdapter(Context c, PublisherRecordFragment publisherRecordFragment, PublisherCardFragment publisherCardFragment, PublisherInfoFragment publisherInfoFragment){
+
+    public PublisherNameListAdapter(Context c, PublisherRecordFragment publisherRecordFragment, PublisherCardFragment publisherCardFragment, PublisherCardListAdapter cardListAdapter) {
         context = c;
         infoRecords = new ArrayList<>();
         this.publisherRecordFragment = publisherRecordFragment;
         this.publisherCardFragment = publisherCardFragment;
-        this.publisherInfoFragment = publisherInfoFragment;
+        this.cardListAdapter = cardListAdapter;
         ParseHelper.GetAllNames(this);
     }
 
-    @Override
-    public int getCount() {
-        return infoRecords.size();
-    }
 
-    @Override
-    public Object getItem(int position) {
-        return infoRecords.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-
-        TextView textView = (TextView) LayoutInflater.from(context).inflate(R.layout.publisher_name, null);
-        textView.setText(infoRecords.get(position).firstName + " " + infoRecords.get(position).lastName);
-        if (selectedItem == position){
-            textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
-        }else{
-            textView.setTypeface(textView.getTypeface(), Typeface.NORMAL);
-        }
-        textView.setPadding(15, 15, 0, 15);
-        return textView;
-    }
-
-    public void addItem(PublisherInfo name){
+    public void addItem(PublisherInfo name) {
         if (!infoRecords.contains(name)) {
             infoRecords.add(name);
             notifyDataSetChanged();
         }
     }
 
-    public void setSelectedItem(int position){
+    public void setSelectedItem(int position) {
         selectedItem = position;
         publisherRecordFragment.setSelectedPublisherIndex(position);
-        if (selectedItem<infoRecords.size()){
+        if (selectedItem < infoRecords.size()) {
             selectedRecord = infoRecords.get(selectedItem);
             publisherCardFragment.setInfo(infoRecords.get(selectedItem));
-            publisherInfoFragment.setInfo(infoRecords.get(selectedItem));
-            publisherCardFragment.saveCard();
-            publisherInfoFragment.populateView(infoRecords.get(selectedItem));
-            ParseHelper.GetRecordsForPublisher(publisherCardFragment, infoRecords.get(position));
+           // ((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter()).packAndSendUpdateAll();
+            ParseHelper.GetRecordsForPublisher((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter(), infoRecords.get(position));
         }
 
         notifyDataSetChanged();
@@ -103,62 +78,95 @@ public class PublisherNameListAdapter extends BaseAdapter implements AdapterView
     public void onQueryCompleted(ArrayList<? extends ParseObject> objects, Class<? extends ParseObject> c) {
 
 
-       if (objects.size()>0){
-            if (c.equals(PublisherInfo.class)){
+        if (objects.size() > 0) {
+            if (c.equals(PublisherInfo.class)) {
 
-                for(ParseObject o:objects){
-                    PublisherInfo info = (PublisherInfo)o;
+                for (ParseObject o : objects) {
+                    PublisherInfo info = (PublisherInfo) o;
                     info.update();
-
-                    /*String name;
-                    if ( TextUtils.isEmpty(info.middleName)){
-                        name = info.firstName + " " + info.lastName;
-                    } else{
-                        name = info.firstName+ " " + info.middleName + " " + info.lastName;
-                    }
-                    */
                     addItem(info);
-
                 }
 
+                sortRecords();
+                selectedItem = infoRecords.indexOf(selectedRecord);
+                if (selectedItem < 0) {
+                    selectedItem = 0;
+                }
                 notifyDataSetChanged();
-                publisherInfoFragment.setInfo(infoRecords.get(selectedItem));
-                ParseHelper.GetRecordsForPublisher(publisherCardFragment, infoRecords.get(selectedItem));
+                ParseHelper.GetRecordsForPublisher((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter(), infoRecords.get(selectedItem));
             }
         }
 
     }
 
     @Override
-    public void notifyDataSetChanged(){
+    public PublisherNameHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
+
+        LinearLayout mainLayout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.recycler_pubnamerow, null);
+        PublisherNameHolder holder = new PublisherNameHolder(mainLayout);
+        holder.setAdapter(this);
+        holder.setContext(context);
+        holder.setRecordFragment(publisherRecordFragment);
+
+        return holder;
+    }
 
 
+
+    @Override
+    public void onBindViewHolder(PublisherNameHolder publisherNameHolder, int i) {
+
+                PublisherInfo info = infoRecords.get(i);
+                publisherNameHolder.bindPublisher(info, selectedItem == i);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        //if (footerEnabled)
+        //    return infoRecords.size() + 1;
+        return infoRecords.size();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        setSelectedItem(((ViewGroup) v.getParent()).indexOfChild(v));
+    }
+
+    @Override
+    public int getItemViewType(int position){
+        if (position == TYPE_HEADER){
+            return TYPE_HEADER;
+        }
+        return TYPE_ITEM;
+    }
+
+    private void sortRecords() {
         Collections.sort(infoRecords, new Comparator<PublisherInfo>() {
             @Override
             public int compare(PublisherInfo lhs, PublisherInfo rhs) {
 
                 //return 0 if lhs comes before rhs, and 1 otherwise
-                if (lhs.lastName!=rhs.lastName){
+                if (lhs.lastName != rhs.lastName) {
                     return lhs.lastName.compareToIgnoreCase(rhs.lastName);
 
-                }else{
-                    if (lhs.firstName!=rhs.firstName){
+                } else {
+                    if (lhs.firstName != rhs.firstName) {
                         return lhs.firstName.compareToIgnoreCase(rhs.firstName);
-                    }
-                    else{
+                    } else {
                         return lhs.middleName.compareToIgnoreCase(rhs.middleName);
                     }
                 }
 
             }
         });
-
-
-        selectedItem = infoRecords.indexOf(selectedRecord);
-        if (selectedItem<0){
-            selectedItem = 0;
-        }
-        super.notifyDataSetChanged();
     }
 
 }
+
+
+
+
+
+
