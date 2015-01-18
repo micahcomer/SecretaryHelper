@@ -32,18 +32,16 @@ public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherName
     int selectedItem = 0;
     PublisherRecordFragment publisherRecordFragment;
     PublisherCardFragment publisherCardFragment;
-    PublisherCardListAdapter cardListAdapter;
     private static final int VIEW_TYPE = 0;
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
 
-    public PublisherNameListAdapter(Context c, PublisherRecordFragment publisherRecordFragment, PublisherCardFragment publisherCardFragment, PublisherCardListAdapter cardListAdapter) {
+    public PublisherNameListAdapter(Context c, PublisherRecordFragment publisherRecordFragment, PublisherCardFragment publisherCardFragment) {
         context = c;
         infoRecords = new ArrayList<>();
         this.publisherRecordFragment = publisherRecordFragment;
         this.publisherCardFragment = publisherCardFragment;
-        this.cardListAdapter = cardListAdapter;
         ParseHelper.GetAllNames(this);
     }
 
@@ -61,7 +59,7 @@ public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherName
         if (selectedItem < infoRecords.size()) {
             selectedRecord = infoRecords.get(selectedItem);
             publisherCardFragment.setInfo(infoRecords.get(selectedItem));
-           // ((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter()).packAndSendUpdateAll();
+           ((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter()).packAndSendUpdateAll();
             ParseHelper.GetRecordsForPublisher((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter(), infoRecords.get(position));
         }
 

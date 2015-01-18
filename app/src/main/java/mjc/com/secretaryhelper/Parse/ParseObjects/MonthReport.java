@@ -42,7 +42,10 @@ public class MonthReport extends ParseObject implements ParseHelper.SaveablePars
         year = this.getInt("Year");
         books = this.getInt("Books");
         brochures = this.getInt("Brochures");
-        hours = this.getNumber("Hours").floatValue();
+        Number n = this.getNumber("Hours");
+        if (n!=null){
+            hours = n.floatValue();
+        }
         mags = this.getInt("Mags");
         RVs = this.getInt("Rvs");
         BS = this.getInt("BS");

@@ -2,11 +2,9 @@ package mjc.com.secretaryhelper.PublisherRecordFragment;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,16 +13,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.Parse;
 import com.parse.ParseObject;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,7 +37,9 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
     HashMap<Integer, ArrayList<MonthReport>> reports;
     ArrayList<Integer> reportsToClear;
     ArrayList<MonthReport> reportsToUpdate;
-    int saveCount = 0;
+    ArrayList<PublisherCardHolder>holders;
+
+    private int saveCount=0;
     private static final int saveThreshold = 6;
 
     private static final int TAG_KEY_LOCATION = R.string.tag_key_location;
@@ -56,9 +51,10 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         currentPublisher = info;
         ParseHelper.GetRecordsForPublisher(this, currentPublisher);
         currentYear = Calendar.getInstance().get(Calendar.YEAR);
-
+        holders = new ArrayList<>();
         reportsToClear = new ArrayList<>();
         reportsToUpdate = new ArrayList<>();
+
     }
 
     @Override
@@ -67,7 +63,7 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         PublisherCardView card = (PublisherCardView) LayoutInflater.from(mContext).inflate(R.layout.pubcard, null);
         PublisherCardHolder holder = new PublisherCardHolder(card);
         card.holder = holder;
-        card.setOnFocusChangeListener(this);
+        holders.add(holder);
         return holder;
 
     }
@@ -75,11 +71,11 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
     @Override
     public void onBindViewHolder(PublisherCardHolder holder, int position) {
 
-        fillHeaders(holder);
-        setMonths(holder);
-        fillData(holder, position);
-        fillTotals(holder);
-        setCallBacks(holder);
+            fillHeaders(holder);
+            setMonths(holder);
+            fillData(holder, position);
+            fillTotals(holder);
+            setCallBacks(holder);
 
     }
 
@@ -184,9 +180,14 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
 
         int key = currentYear - position;
         ArrayList<MonthReport> reportsForYear = reports.get(key);
-        if ((reportsForYear !=null)&&(reportsForYear.size()>0)){
+        if (reportsForYear == null){
+            reportsForYear = new ArrayList<>();
+            reports.put(key, reportsForYear);
+        }
+        if (reportsForYear.size()>0){
             holder.serviceYearTV.setText(String.valueOf(reportsForYear.get(0).year));
         }
+
         MonthReport r = new MonthReport();
 
         for (int y=0; y<12; y++){
@@ -196,15 +197,22 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
                 month = month-12;
             }
 
-            if (reportsForYear!=null){
                 for (int i=0; i<reportsForYear.size(); i++){
-                    if (reportsForYear.get(i).month==month);
-                    r = reportsForYear.get(i);
+                    if (reportsForYear.get(i).month==month){
+                        r = reportsForYear.get(i);
+                        i= reportsForYear.size();
+                    }
+                    else{
+                        if (i==reportsForYear.size()-1){
+                            r = null;
+                        }
+                    }
                 }
 
                 if (r!=null){
                     for (int x=0; x<7; x++){
                         TextView tv = holder.valuesTV[x][y];
+                        tv.setOnFocusChangeListener(this);
                         switch (x){
                             case 0:
                                 tv.setText(String.valueOf(r.books));
@@ -234,7 +242,16 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
                         }
                     }
                 }
-            }
+                else{
+                    for (int x=0; x<6; x++) {
+                        TextView tv = holder.valuesTV[x][y];
+                        tv.setText("0");
+                        tv.setOnFocusChangeListener(this);
+                    }
+                    holder.valuesTV[6][y].setText("");
+                    holder.valuesTV[6][y].setOnFocusChangeListener(this);
+                }
+
 
         }
     }
@@ -301,7 +318,6 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
                 et.setOnEditorActionListener(this);
                 et.setTag(TAG_KEY_LOCATION, new int[]{x, y});
                 et.setSelectAllOnFocus(true);
-                et.setOnFocusChangeListener(this);
                 if (x < 6) {
                     et.setRawInputType(InputType.TYPE_CLASS_NUMBER);
                 }
@@ -354,6 +370,7 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
     }
     public void OnPublisherRecordsReceived(List<ParseObject> objects, PublisherInfo info){
 
+        reports.clear();
         if (info!=null){
             currentPublisher = info;
         }
@@ -361,17 +378,14 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         for (ParseObject o:objects){
             if (o instanceof MonthReport){
                 MonthReport r = (MonthReport)o;
+                r.update();
                 if (reports.get(r.year)==null){
                     reports.put(r.year, new ArrayList<MonthReport>());
                 }
                 reports.get(r.year).add(r);
             }
         }
-
-
-
     }
-
         if ((currentPublisher!=null)&&(objects.size()==0)){
             MonthReport firstReport = new MonthReport();
             firstReport.publisherInfo = currentPublisher;
@@ -380,39 +394,25 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
             if (reports.get(currentYear)==null){
                 reports.put(currentYear, new ArrayList<MonthReport>());
             }
-
             reports.get(currentYear).add(firstReport);
-
         }
 
         notifyDataSetChanged();
 
     }
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-
-       if (v instanceof PublisherCardView){
-           PublisherCardView p = (PublisherCardView)v;
-           fillTotals(p.holder);
-           saveCount++;
-           if (saveCount== saveThreshold){
-               packAndSendUpdate(p.holder);
-               saveCount=0;
-           }
-
-       }
-    }
-
 
     public void packAndSendUpdate(PublisherCardHolder holder){
+
 
 
         reportsToClear.clear();
         reportsToUpdate.clear();
 
+        int year = currentYear;
         TextView[][] views = holder.valuesTV;
-        int year = Integer.valueOf(holder.serviceYearTV.toString());
-
+        if (isInteger(holder.serviceYearTV.getText().toString())){
+            year = Integer.valueOf(holder.serviceYearTV.getText().toString());
+        }
 
         //Iterate through each row on the card representing a month.
         //If the row contains data, check to see if we have a month report in the hash table for it.  If so, get it and add it to list to save.
@@ -420,65 +420,130 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         //If the row doesn't contain data, check to see if we have a month report in the hash table for it.  If so, add it to the list, to
         //both delete from Parse and from the hash table.
 
-        for (int i=0; i<12; i++){
+        for (int i=0; i<12; i++) {
 
-            int adj_month = i+9;
-            if (adj_month>12){
-                adj_month=adj_month-12;
+            int adj_month = i + 9;
+            if (adj_month > 12) {
+                adj_month = adj_month - 12;
             }
+
+
+            //1.  Try to find a report in our hash table matching our current year and month.
+            //2.  Look at what returns and determine if we found a report.
+            //3.  Next, see if the current card is empty.  There are now four scenarios:
+            // a - No report, row empty: Do nothing.
+            // b - Report found, row empty: add report to clear list.
+            // c - No report, row full: make new report and populate with row data, add new row to save list
+            // d - Report found, row full.  add existing report to save list.
+
+            boolean reportFound;
+            boolean rowEmpty;
 
             MonthReport r = getReportForMonthAndYear(adj_month, year);
-            if (isRowEmpty(views, i)){
-                //find the row if it exists in the hash table and add it to be deleted.
-                if (r!=null){
-                    reportsToClear.add(r.month);
-                    deleteLocalMonthReport(r.month, year);
-                }
-            }else{
-                if (r!=null){
-                    reportsToUpdate.add(r);
-                }else{
-                    r = new MonthReport();
-                    //Populate the data for m based on the values in the edit text fields for that row.
-                    r = populateMonthReport(r, adj_month, year, views);
-                    reportsToUpdate.add(r);
-                    if (reports.get(year)==null){
-                        reports.put(year, new ArrayList<MonthReport>());
-                    }
-                    reports.get(year).add(r);
-                }
+
+            if (r == null) {
+                reportFound = false;
+            } else {
+                reportFound = true;
             }
+            rowEmpty = isRowEmpty(views, i);
+
+            //a  - Do nothing!
+
+            //b
+            if ((reportFound)&&(rowEmpty)){
+               reportsToClear.add(r.month);
+                deleteLocalMonthReport(r.month, year);
+            }
+
+            //c
+            if ((!reportFound)&&(!rowEmpty)){
+                MonthReport report = new MonthReport();
+                populateMonthReport(report, adj_month, year, views);
+                reports.get(year).add(report);
+                reportsToUpdate.add(report);
+            }
+
+            //d
+            if ((reportFound)&&(!rowEmpty)){
+                populateMonthReport(r, adj_month, year, views);
+                reportsToUpdate.add(r);
+            }
+
+
+
         }
 
         //Send the update to the server.
         ParseHelper.SendCardUpdate(reportsToUpdate, reportsToClear, currentPublisher, currentYear);
 
     }
-
+    public void packAndSendUpdateAll(){
+        for (PublisherCardHolder h:holders){
+            packAndSendUpdate(h);
+        }
+    }
     private boolean isRowEmpty(TextView[][] views, int row){
 
-        if (Integer.valueOf(views[0][row].toString())!=0) return false;
-        if (Integer.valueOf(views[1][row].toString())!=0) return false;
-        if (Float.valueOf(views[2][row].toString())!=0f) return false;
-        if (Integer.valueOf(views[3][row].toString())!=0) return false;
-        if (Integer.valueOf(views[4][row].toString())!=0) return false;
-        if (Integer.valueOf(views[5][row].toString())!=0) return false;
-        if (TextUtils.isEmpty(views[6][row].toString())) return false;
+        int emptyCount = 0;
+        try{
+            if (Integer.valueOf(views[0][row].getText().toString()) == 0) emptyCount++;
+        }catch (NumberFormatException e){
 
+        }
+        try{
+            if (Integer.valueOf(views[1][row].getText().toString()) == 0) emptyCount++;
+        }catch (NumberFormatException e){
+
+        }
+        try{
+            if (Float.valueOf(views[2][row].getText().toString()) == 0f) emptyCount++;
+        }catch (NumberFormatException e){
+        }
+        try{
+            if (Integer.valueOf(views[3][row].getText().toString()) == 0) emptyCount++;
+        }catch (NumberFormatException e){
+        }
+        try{
+            if (Integer.valueOf(views[4][row].getText().toString())== 0)emptyCount++;
+        }catch(NumberFormatException e){
+        }
+        try{
+            if (Integer.valueOf(views[5][row].getText().toString()) == 0) emptyCount++;
+        }catch (NumberFormatException e){
+        }
+        try{
+            if (TextUtils.isEmpty(views[6][row].getText().toString())) emptyCount++;
+        }catch (NumberFormatException e){
+        }
+
+        if (emptyCount==7)
         return true;
+        else
+            return false;
     }
     private MonthReport populateMonthReport(MonthReport r, int month, int year, TextView[][]views){
-        r.books = Integer.valueOf(views[0][month].getText().toString());
-        r.brochures = Integer.valueOf(views[1][month].getText().toString());
-        r.hours = Float.valueOf(views[2][month].getText().toString());
-        r.mags = Integer.valueOf(views[3][month].getText().toString());
-        r.RVs = Integer.valueOf(views[4][month].getText().toString());
-        r.BS = Integer.valueOf(views[5][month].getText().toString());
-        r.notes = views[6][month].getText().toString();
 
+        int unadjmonth = month-9;
+        if (unadjmonth<0){
+            unadjmonth = unadjmonth + 12;
+        }
+
+        r.month = month;
         r.publisherInfo = currentPublisher;
         r.year = year;
-        r.update();
+        r.notes = views[6][unadjmonth].getText().toString();
+
+        try{
+            r.books = Integer.valueOf(views[0][unadjmonth].getText().toString());
+            r.brochures = Integer.valueOf(views[1][unadjmonth].getText().toString());
+            r.hours = Float.valueOf(views[2][unadjmonth].getText().toString());
+            r.mags = Integer.valueOf(views[3][unadjmonth].getText().toString());
+            r.RVs = Integer.valueOf(views[4][unadjmonth].getText().toString());
+            r.BS = Integer.valueOf(views[5][unadjmonth].getText().toString());
+        }catch (NumberFormatException e){
+
+        }
         return r;
     }
     private MonthReport getReportForMonthAndYear(int month, int year){
@@ -507,5 +572,24 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
 
         }
     }
+    private boolean isInteger( String input ) {
+        try {
+            Integer.parseInt( input );
+            return true;
+        }
+        catch( NumberFormatException e ) {
+            return false;
+        }
+    }
 
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        saveCount++;
+        if (saveCount>=saveThreshold){
+            saveCount=0;
+            for (PublisherCardHolder h:holders){
+                packAndSendUpdate(h);
+            }
+        }
+    }
 }

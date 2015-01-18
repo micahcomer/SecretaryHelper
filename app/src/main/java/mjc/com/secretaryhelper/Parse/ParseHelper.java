@@ -61,8 +61,7 @@ public class ParseHelper {
 
             q
                     .whereEqualTo("Month", i)
-                    .whereEqualTo("firstName", info.firstName)
-                    .whereEqualTo("lastName", info.lastName)
+                    .whereEqualTo("Publisher", info)
                     .whereEqualTo("Year", year)
                     .findInBackground(new FindCallback() {
                         @Override
@@ -80,7 +79,7 @@ public class ParseHelper {
         }
 
         for (MonthReport r : monthsToUpdate) {
-            r.saveInBackground();
+            r.saveSelf();
         }
     }
 

@@ -65,11 +65,18 @@ public class PublisherRecordFragment extends Fragment  {
                     .beginTransaction()
                     .add(R.id.fragment_container, cardFragment)
                     .commit();
+        }else{
+            cardFragment.onCreateView(inflater, container, savedInstanceState);
         }
 
         LinearLayout mainLayout = (LinearLayout)inflater.inflate(R.layout.fragment_publisher_record, null);
 
         publisherNameList = (SuperRecyclerView)mainLayout.findViewById(R.id.listView2);
+       if (nameListAdapter==null){
+
+            nameListAdapter = new PublisherNameListAdapter(getActivity(), this, cardFragment);
+        }
+        publisherNameList.setAdapter(nameListAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
 
 
@@ -111,7 +118,7 @@ public class PublisherRecordFragment extends Fragment  {
 
 
         if (nameListAdapter == null){
-            nameListAdapter = new PublisherNameListAdapter(getActivity(), this, cardFragment, (PublisherCardListAdapter)cardFragment.cardRecycler.getAdapter());
+            nameListAdapter = new PublisherNameListAdapter(getActivity(), this, cardFragment);
         }
         nameListAdapter.setSelectedItem(selectedPublisherIndex);
         publisherNameList.setAdapter(nameListAdapter);
@@ -120,7 +127,7 @@ public class PublisherRecordFragment extends Fragment  {
 
     public void setGroups(ArrayList<PublisherGroup> groups){
         this.groups = groups;
-        nameListAdapter = new PublisherNameListAdapter(getActivity(), this, cardFragment, (PublisherCardListAdapter)cardFragment.cardRecycler.getAdapter());
+        nameListAdapter = new PublisherNameListAdapter(getActivity(), this, cardFragment);
         nameListAdapter.setSelectedItem(selectedPublisherIndex);
         publisherNameList.setAdapter(nameListAdapter);
     }
