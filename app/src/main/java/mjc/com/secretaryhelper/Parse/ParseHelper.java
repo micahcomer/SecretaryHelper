@@ -23,6 +23,28 @@ import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherRecordFragment;
  */
 public class ParseHelper {
 
+    public static void DeletePublisher(final PublisherInfo name){
+
+        name.deleteInBackground();
+
+        //Delete all month reports associated with the publisher being deleted.
+        ParseQuery query = new ParseQuery(MonthReport.class);
+        query.whereEqualTo("Publisher", name).findInBackground(new FindCallback() {
+            @Override
+            public void done(List list, ParseException e) {
+                if (list!=null){
+                    for (Object o:list){
+                        if (o instanceof MonthReport){
+                            MonthReport monthReport = (MonthReport)o;
+                            monthReport.deleteInBackground();
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
     public static void GetAllNames(final PublisherNameListAdapter adapter) {
 
         ParseQuery query = new ParseQuery(PublisherInfo.class);

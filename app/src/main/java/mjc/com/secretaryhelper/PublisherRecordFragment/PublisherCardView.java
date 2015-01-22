@@ -35,6 +35,7 @@ public class PublisherCardView extends CardView{
     public PublisherCardView(Context context) {
         super(context);
 
+
     }
     public PublisherCardView(Context context, AttributeSet attrs){
         super(context, attrs);

@@ -8,11 +8,14 @@ import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
 import mjc.com.secretaryhelper.Parse.ParseHelper;
+import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherNameHolder;
 import mjc.com.secretaryhelper.PublisherRecordFragment.PublisherNameListAdapter;
 
 @ParseClassName("publisherinfo")
 public class PublisherInfo extends ParseObject implements ParseHelper.SaveableParseObjectWithCallback{
 
+
+    public PublisherNameHolder holder;
     public int key;
     public String firstName;
     public String middleName;
@@ -64,6 +67,7 @@ public class PublisherInfo extends ParseObject implements ParseHelper.SaveablePa
     public void saveSelfWithCallback(final Object callbackObject){
 
 
+        key = this.hashCode();
         put("key", key);
         if (firstName!=null){put("firstName", firstName);}
         if (middleName!=null){put("middleName", middleName);}

@@ -1,16 +1,12 @@
 package mjc.com.secretaryhelper.PublisherRecordFragment;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.parse.ParseObject;
 
@@ -53,9 +49,21 @@ public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherName
         }
     }
 
+    public void removeItem(PublisherInfo name){
+        if (infoRecords.contains(name)){
+            infoRecords.remove(name);
+            ParseHelper.DeletePublisher(name);
+            notifyDataSetChanged();
+            ((PublisherCardListAdapter)(publisherCardFragment.cardRecycler.getAdapter())).setPublisher(null);
+            publisherCardFragment.cardRecycler.getAdapter().notifyDataSetChanged();
+        }
+    }
+
     public void setSelectedItem(int position) {
         selectedItem = position;
-        publisherRecordFragment.setSelectedPublisherIndex(position);
+        if (position<infoRecords.size()){
+            publisherRecordFragment.setSelectedPublisher(infoRecords.get(position), position);
+        }
         if (selectedItem < infoRecords.size()) {
             selectedRecord = infoRecords.get(selectedItem);
             publisherCardFragment.setInfo(infoRecords.get(selectedItem));
@@ -86,12 +94,14 @@ public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherName
                 }
 
                 sortRecords();
-                selectedItem = infoRecords.indexOf(selectedRecord);
+                setSelectedItem(0);
+
                 if (selectedItem < 0) {
                     selectedItem = 0;
                 }
                 notifyDataSetChanged();
                 ParseHelper.GetRecordsForPublisher((PublisherCardListAdapter)publisherCardFragment.cardRecycler.getAdapter(), infoRecords.get(selectedItem));
+
             }
         }
 
@@ -116,7 +126,10 @@ public class PublisherNameListAdapter extends RecyclerView.Adapter<PublisherName
 
                 PublisherInfo info = infoRecords.get(i);
                 publisherNameHolder.bindPublisher(info, selectedItem == i);
-
+                info.holder = publisherNameHolder;
+        if (info.firstName == "New Publisher"){
+            publisherNameHolder.showPubInfoDialog();
+        }
     }
 
     @Override

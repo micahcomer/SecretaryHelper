@@ -36,7 +36,7 @@
             android:layout_width="@dimen/cellwidth"
             android:layout_height="@dimen/rowheight"/>
 
-        <include layout="@layout/pubcard_edittext_cell"
+        <include layout="@layout/pubcard_labeltext_cell"
             android:layout_width="@dimen/cellwidth"
             android:layout_height="@dimen/rowheight"/>
 

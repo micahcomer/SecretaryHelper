@@ -1,7 +1,11 @@
 package mjc.com.secretaryhelper.PublisherRecordFragment;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -13,9 +17,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 
@@ -61,6 +67,10 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
     public PublisherCardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         PublisherCardView card = (PublisherCardView) LayoutInflater.from(mContext).inflate(R.layout.pubcard, null);
+        CardView.LayoutParams lp = new CardView.LayoutParams(CardView.LayoutParams.WRAP_CONTENT, CardView.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        lp.bottomMargin = 75;
+
+        card.setLayoutParams(lp);
         PublisherCardHolder holder = new PublisherCardHolder(card);
         card.holder = holder;
         holders.add(holder);
@@ -74,15 +84,33 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
             fillHeaders(holder);
             setMonths(holder);
             fillData(holder, position);
+            disableTotals(holder);
             fillTotals(holder);
             setCallBacks(holder);
 
+
+    }
+
+    private void disableTotals(PublisherCardHolder holder){
+        for (int i=0; i<8; i++)
+        holder.totalsTV[i].setFocusable(false);
+    }
+
+    public void setPublisher(PublisherInfo pub){
+        currentPublisher = pub;
+
+        if (currentPublisher==null){
+            reports.clear();
+            holders.clear();
+        }
     }
 
     @Override
     public int getItemCount() {
-        if (reports.size()<=0)
-            return 1;
+        if (reports.size()<=0)   {
+            if (currentPublisher!=null)
+                return 1;
+        }
         return reports.size();
     }
 
@@ -184,9 +212,9 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
             reportsForYear = new ArrayList<>();
             reports.put(key, reportsForYear);
         }
-        if (reportsForYear.size()>0){
-            holder.serviceYearTV.setText(String.valueOf(reportsForYear.get(0).year));
-        }
+
+            holder.serviceYearTV.setText(String.valueOf(key));
+
 
         MonthReport r = new MonthReport();
 
@@ -264,8 +292,11 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         int RVtot = 0;
         int BStot = 0;
 
-        for (int x=1; x<7; x++){
+        for (int x=0; x<7; x++){
             for (int y=0; y<12; y++){
+
+
+
                 try {
                     switch (x) {
                         case 0:
@@ -275,20 +306,19 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
                             brochTot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
                             break;
                         case 2:
-                            hourTot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
+                            hourTot += Float.valueOf(holder.valuesTV[x][y].getText().toString());
                             break;
                         case 3:
-                            brochTot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
-                            break;
-                        case 4:
                             magTot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
                             break;
-                        case 5:
+                        case 4:
                             RVtot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
                             break;
-                        case 6:
+                        case 5:
                             BStot += Integer.valueOf(holder.valuesTV[x][y].getText().toString());
                             break;
+                        case 6:
+                           break;
 
                     }
                 }catch (NumberFormatException e){
@@ -305,13 +335,15 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         holder.totalsTV[4].setText(String.valueOf(magTot));
         holder.totalsTV[5].setText(String.valueOf(RVtot));
         holder.totalsTV[6].setText(String.valueOf(BStot));
+
         holder.totalsTV[7].setText("");
+
 
     }
     public void setCallBacks(PublisherCardHolder holder) {
 
-        TextView[][] views = holder.valuesTV;
-        for (int x = 0; x < 7; x++) {
+        final TextView[][] views = holder.valuesTV;
+        for (int x = 0; x < 6; x++) {
             for (int y = 0; y < 12; y++) {
                 EditText et = ((EditText) views[x][y]);
                 et.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -323,11 +355,45 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
                 }
             }
         }
+
+        for (int i=0; i<12; i++){
+            final int j=i;
+            views[6][i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    FrameLayout mainLayout = (FrameLayout)LayoutInflater.from(mContext).inflate(R.layout.notesdialoglayout, null);
+                    final EditText notesField = (EditText)mainLayout.findViewById(R.id.notes_edittext);
+                    notesField.setText(views[6][j].getText());
+
+                    builder.setView(mainLayout);
+                    builder.setTitle("Notes for " + currentPublisher.toString() + " for " + convertMonthFromRow(j-1));
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //add notes here.
+                            views[6][j].setText(notesField.getText());
+                            packAndSendUpdateAll();
+                        }
+                    })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //do nothing on cancel
+                                }
+                            })
+                            .create().show();
+                }
+            });
+        }
     }
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_NEXT) {
             setFocusToNextEditText(v);
+            for (PublisherCardHolder h:holders){
+                fillTotals(h);
+            }
         }
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             // TODO: what happens after the last cell?
@@ -371,6 +437,8 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
     public void OnPublisherRecordsReceived(List<ParseObject> objects, PublisherInfo info){
 
         reports.clear();
+        holders.clear();
+
         if (info!=null){
             currentPublisher = info;
         }
@@ -460,6 +528,7 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
             if ((!reportFound)&&(!rowEmpty)){
                 MonthReport report = new MonthReport();
                 populateMonthReport(report, adj_month, year, views);
+
                 reports.get(year).add(report);
                 reportsToUpdate.add(report);
             }
@@ -588,8 +657,23 @@ public class PublisherCardListAdapter extends RecyclerView.Adapter<PublisherCard
         if (saveCount>=saveThreshold){
             saveCount=0;
             for (PublisherCardHolder h:holders){
+                fillTotals(h);
                 packAndSendUpdate(h);
             }
         }
+    }
+
+
+    public void addNewCard(){
+
+        int oldestYear = currentYear;
+        for (int key:reports.keySet()){
+            if (key<oldestYear){
+                oldestYear = key;
+            }
+        }
+
+        reports.put(oldestYear-1, new ArrayList<MonthReport>());
+        notifyDataSetChanged();
     }
 }

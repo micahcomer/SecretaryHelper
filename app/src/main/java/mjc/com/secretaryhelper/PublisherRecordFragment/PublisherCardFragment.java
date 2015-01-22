@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,12 +46,15 @@ public class PublisherCardFragment extends Fragment{
 
         context = getActivity();
         LinearLayout mainLayout = (LinearLayout)inflater.inflate(R.layout.fragment_publisher_card, null);
-        cardRecycler = (SuperRecyclerView) mainLayout.findViewById(R.id.cardRecycler);
 
+        cardRecycler = (SuperRecyclerView) mainLayout.findViewById(R.id.cardRecycler);
+        
         if (cardRecycler.getAdapter()==null){
             cardRecycler.setAdapter(new PublisherCardListAdapter(context, mInfo));
         }
         cardRecycler.setLayoutManager(new LinearLayoutManager(context));
+
+
         currentYear = Calendar.getInstance().get(Calendar.YEAR);
         cards = new ArrayList<>();
         return mainLayout;
